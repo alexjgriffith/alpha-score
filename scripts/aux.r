@@ -1,10 +1,13 @@
 #!/usr/bin/env R
 #
-# This file is part of peakAnalysis, http://github.com/alexjgriffith/alpha-score/, 
+# This file is part of peakAnalysis
+# , http://github.com/alexjgriffith/alpha-score/, 
 # and is Copyright (C) University of Ottawa, 2015. It is Licensed under 
 # the three-clause BSD License; see LICENSE.txt.
+# Author : Alexander Griffith
 # Contact: griffitaj@gmail.com
 
+# aux.r -> utils.r
 
 collapse<-function(...){paste(...,sep="")}
 lcollapse<-function(x){br<-"";for(i in x){br<-paste(br,i,sep="")};br}
