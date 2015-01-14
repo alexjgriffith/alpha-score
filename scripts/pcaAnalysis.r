@@ -24,6 +24,16 @@
 # pcs<-prcomp(t(normData))
 # plotPCs(pcs,cbind(1,2),normData,cats,c( "Abnormal <-> Normal","Stem <-> Differentiated",paste(mock[i]," PC1 Vs PC3", sep="")))}
 
+# library(ape)
+# temp<-cor(data)
+# rownames(temp)<-cats
+# colnames(temp)<-cats
+## writes corelations to a table
+# write.table(temp,"test.table",quote=FALSE,sep="\t")
+# Generates and plots a dendogram
+# plot(as.phylo(hclust(dist(temp),method="average")),type="fan")
+# title(main="Combinded Mock Dendogram")
+
 # n=0
 # for(i in sequence(length(cats))){
 #    plotBox(pcs,i,normData,cats)
@@ -34,6 +44,10 @@
 # cluster<-kmeans(t(x),3,algorithm="Lloyd",iter.max=10)
 # lapply(seq(3), function(x) cats[cluster$cluster==x])
 
+ascore<-function(pca,lis){
+interlace<-function(...){t(cbind(...))}
+lines<-apply(pcs$rotation,2,function(x){c(x[c(1,2,3)],colnames(pcs$rotation)[c(1,2,3)])})
+}
 
 loadData<-function(file="~/masters/normal-abnormal/single_heights.bed"){  
   cdata<-read.table(file)

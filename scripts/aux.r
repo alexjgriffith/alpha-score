@@ -9,9 +9,12 @@
 
 # aux.r -> utils.r
 
-collapse<-function(...){paste(...,sep="")}
-lcollapse<-function(x){br<-"";for(i in x){br<-paste(br,i,sep="")};br}
+collapse<-function(...,sep=""){paste(...,sep=sep)}
+lcollapse<-function(x,sep=""){br<-"";for(i in x){br<-paste(br,i,sep=sep)};br}
 collect<-function(x,fn,...){lcollapse(sapply(x,fn,...))}
 modulous<-function(x,m)
     {t1<-floor(x/m)
      (x-t1*m)}
+
+
+
