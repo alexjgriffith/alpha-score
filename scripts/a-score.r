@@ -1,4 +1,4 @@
-#!/data/binaries/R-3.1/bin/Rscript
+#!/data/binaries/R-3.1.0/bin/Rscript
 library('getopt')
 source("pcaAnalysis.r")
 
@@ -9,12 +9,13 @@ spec = matrix(c(
     ),byrow=TRUE,ncol=4)
 args=getopt(spec)
 
-root_file<-args$fileLocation
-cat_file<-args$catagories
+rootFile<-args$fileLocation
+catFile<-args$catagories
 
 values<-loadData(rootFile)
 cats<-t(read.table(catFile))
 data<-values$data
 normData<-standPCAPrep(data,"colQn")
 pcs<-prcomp(t(normData))
-write.table(pcs$rotation[as.numeric(strsplit(args$cols,",")[[1]])],stdout(),col.names=FALSE,row.names=FALSE,quote=FALSE,sep="\t")
+
+write.table(pcs$rotation[,as.numeric(strsplit(args$cols,",")[[1]])],stdout(),col.names=FALSE,row.names=FALSE,quote=FALSE,sep="\t")
