@@ -6,13 +6,13 @@ spec = matrix(c(
     'fileLocation','f', 1,"character"
     ),byrow=TRUE,ncol=4)
 args=getopt(spec)
-print("hello")
-fileLocation="~/Dropbox/UTX-Alex/jan/combined_sorted.bed" #args$fileLocation 
+
+fileLocation=args$fileLocation 
 bedData<-read.delim(fileLocation,header=0)
 geneList<-read.delim("../info/hg19.RefSeqGenes.csv")
-genes<-geneAssociation(bedData[1:100,],geneList,  c(50000,0,0,0))
-for (i in genes) print(i)
-data<-cbind(bedData[1:100,],unlist(t(lapply(genes, function(x) {if(identical(x,character(0))){"None"} else{x}}))))
+genes<-geneAssociation(bedData,geneList,  c(50000,0,0,0),n=15)
+
+data<-cbind(bedData,sapply(genes, function(x){x[1]}))
 
 write.table(data,stdout(),col.names=FALSE,row.names=FALSE,quote=FALSE,sep="\t")
 
