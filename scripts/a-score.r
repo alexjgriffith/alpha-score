@@ -20,27 +20,38 @@ loadProject<-function(projectDirectory,files,relative=TRUE){
         source(paste(projectDirectory,file,sep=""),chdir=TRUE)}
     setwd(tempDir)}
 
+######################################################################
+######################################################################
 
-######################################################################
-######################################################################
 
 library('getopt')
 loadProject("../src/r/","pcaAnalysis.r")
-
 spec = matrix(c(
     'fileLocation','i', 1,"character",
     'catagories','c', 1,"character",
-    'cols','b', 1,"character"
+    'cols','b', 1,"character",
+    'print','p',0,"logic"
     ),byrow=TRUE,ncol=4)
 args=getopt(spec)
-
+if(is.null(args$print)){prints=FALSE}else{prints=TRUE}
 rootFile<-args$fileLocation
 catFile<-args$catagories
+column<-as.numeric(strsplit(args$cols,",")[[1]])
+
 
 values<-loadData(rootFile)
 cats<-t(read.table(catFile))
 data<-values$data
 normData<-standPCAPrep(data,"colQn")
 pcs<-prcomp(t(normData))
+if(prints==TRUE){
+    X11()
+    print(args$print)
+    plotPCs(pcs,column,normData,cats)
+    locator(1)}
+if(prints==FALSE){
+    print("FALSE")
+    write.table(pcs$rotation[,column],stdout(),col.names=FALSE,row.names=FALSE,quote=FALSE,sep="\t")}
 
-write.table(pcs$rotation[,as.numeric(strsplit(args$cols,",")[[1]])],stdout(),col.names=FALSE,row.names=FALSE,quote=FALSE,sep="\t")
+
+
