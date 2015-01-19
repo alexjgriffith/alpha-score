@@ -15,14 +15,8 @@
 #
 # sets<-c("normal-abnormal_not_abnormal-normal.pwm",
 #         "abnormal-normal_not_normal-abnormal.pwm",
-#         "abnormal_normal-other_not_other-abnormal_normal.pwm")       
-# shortNames<-c("n","a","an")
-# fileLocation<-"~/Dropbox/temp-data/"
-# pScoreFile<-"/home/agriffith/Dropbox/temp-data/p-score_table.tab"
-# imageDirectory="/home/agriffith/Dropbox/temp-data/"
-# printFasta(fileLocation,sets,shortNames,imageDirectory)
-# write(htmlGenerateMain(fileLocation,sets,shortNames,imageDirectory),
-#       "test.html")
+#         "abnormal_normal-other_not_other-abnormal_normal.pwm")
+# 
 
 source("aux.r")
 source("html.r")
@@ -67,8 +61,8 @@ prepareTable<-function(loadData,fileLocation,sets,pScoreFile,x){
         cbind(
             getMotifs(loadData(paste(fileLocation,sets[x],sep=""))),
             scoreList(fileLocation,sets,x,shortNames,1,pScoreFile),
-            scoreList(fileLocation,sets,x,shortNames,2,pScoreFile),
-            scoreList(fileLocation,sets,x,shortNames,3,pScoreFile)),
+            scoreList(fileLocation,sets,x,shortNames,2,pScoreFile)),
+            #scoreList(fileLocation,sets,x,shortNames,3,pScoreFile)),
         1,function(x){htmlTable(matrix(collapse(as.character(x))),anotations=buildAnotations("style","font-size:10px"))})}
 
 getFrameChar<-function(lis,val){
@@ -76,7 +70,7 @@ getFrameChar<-function(lis,val){
 
 sequenceGen<-function(... ,fn, n=3){
     I<-lapply(seq(n),function(x) {fn( x=x,...)})
-    ma<-sapply(I,length)
+    ma<-max(sapply(I,length))
     I<-mapply( function(x,y){c(y,rep("",x))},ma-sapply(I,length),I)
     I<-data.frame(I)
     colnames(I)<-shortNames
@@ -96,10 +90,18 @@ printFasta<-function(fileLocation,sets,shortNames,imageDirectory)
             seqLogo(a[[i]],ic.scale=FALSE,xaxis=FALSE,yaxis=FALSE)
             dev.off()}}
 
-htmlGenerateMain<-function(fileLocation,sets,shortNames,imageDirectory){
-    I<-sequenceGen(fn=imageList,n=3,fileLocation,sets,shortNames,imageDirectory)
-    IP<-sequenceGen(fn=imageList,fileLocation,sets,shortNames,imageDirectory,front="motif_p_")
-    M<-sequenceGen(fn=prepareTable,loadData,fileLocation,sets,pScoreFile)
-    mat<-matrix(unlist(lapply(seq(3),function(x){lapply(list(I,IP,M),getFrameChar,x)})),ncol=9)
+htmlGenerateMain<-function(fileLocation,sets,shortNames,imageDirectory,n=3){
+    I<-sequenceGen(fn=imageList,n=n,fileLocation,sets,shortNames,imageDirectory)
+    IP<-sequenceGen(fn=imageList,n=n,fileLocation,sets,shortNames,imageDirectory,front="motif_p_")
+    M<-sequenceGen(fn=prepareTable,n=n,loadData,fileLocation,sets,pScoreFile)
+    mat<-matrix(unlist(lapply(seq(n),function(x){lapply(list(I,IP,M),getFrameChar,x)})),ncol=6)
     htmlDoc(htmlTags("head",htmlTags("title", "Test Images")),htmlTags("body",c(htmlTable(mat))))}
 
+sets<-c("normal_not_normal.pwm", "abnormal_not_abnormal.pwm")
+ shortNames<-c("n_not_n","a_not_a")
+ fileLocation<-"~/Dropbox/temp-data/"
+ pScoreFile<-"/home/agriffith/Dropbox/temp-data/p-score_table_1.tab"
+ imageDirectory="/home/agriffith/Dropbox/temp-data/"
+ printFasta(fileLocation,sets,shortNames,imageDirectory)
+ write(htmlGenerateMain(fileLocation,sets,shortNames,imageDirectory,n=2),
+       "a-score_other.html")

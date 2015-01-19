@@ -49,7 +49,7 @@ leneAssoc<-function(point,geneList,bounds){
     r<-b[which(ess[b]+bounds[3]>peak)]
     locations<-r[c(which(tss[r]-bounds[2]>peak),which(ess[r]+bounds[4]<peak))]
     t<-geneList$txStart[unlist(locations)]
-    gene<-as.character(geneList$name2[locations[order(abs(t-peak))]])
+    gene<-as.character(geneList$name[locations[order(abs(t-peak))]])
     if(identical(gene,character(0))){"None"}else(gene)}
 
 minGene<-function(x,y){
