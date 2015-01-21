@@ -21,9 +21,9 @@ other="cd133\|cd34\|meka\|ecfc"
 # Variables
 fileLocation=/home/griffita/Dropbox/UTX-Alex/jan/
 #sets=("normal-abnormal_not_abnormal-normal" "abnormal-normal_not_normal-abnormal" "abnormal_normal-other_not_other-abnormal_normal")
-sets=("normal_not_normal" "abnormal_not_abnormal")
+sets=("ecfc_not_ecfc")
 files=`echo ${sets[*]}| sed 's/\ /\n/g'| awk '{print $1".pwm"}'`
-transform='s/other/o/g;s/Stem|stem/s/g;s/Abnormal|abnormal/a/g;s/Normal|normal/n/g;'
+transform='s/other/o/g;s/Stem|stem/s/g;s/Abnormal|abnormal/a/g;s/Normal|normal/n/g;s/Meka|meka/m/g;s/ECFC|ecfc/e/g;'
 header=$(echo  ${sets[*]} | sed -r $(echo $transform) | awk '{print "motif " $0}' | sed 's/\ /\\t/g')
 
 
@@ -40,7 +40,9 @@ do
 	-len 6 -o $i
 done
 
-python2.7 ./tags2.py <(paste <(grep -v ">" ~/Dropbox/UTX-Alex/jan/combined.fasta) ~/Dropbox/UTX-Alex/jan/combined_scored.bed | awk '{print $2"\t"$3"\t"$4"\t"$1"\t"$5}') notTop > not_normal.fasta
+Rscript ./scripts/a-score.r -i ~/Dropbox/UTX-Alex/jan/combined_heights.bed -c ~/Dropbox/UTX-Alex/jan/catagories -b 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 > ~/Dropbox/UTX-Alex/jan/combined_scored.bed
+
+python2.7 ./scripts/tags2.py <(paste <( cut -f 1-3 ~/Dropbox/UTX-Alex/jan/combined_sorted.bed) <(grep -v ">" ~/Dropbox/UTX-Alex/jan/combined.fasta) <( cut -f 8 ~/Dropbox/UTX-Alex/jan/combined_scored.bed)) bottom > $fileLocation"meka.fasta"
 
 for i in ${sets[*]}
 do
@@ -53,7 +55,7 @@ done
 # Move the fasta files to an appopirate location
 for i in ${sets[*]}
 do
-    cp `echo $i | awk -v f=$fileLocation  '{print f$1".pwm"}'` ~/Dropbox/temp-data/$i
+    cp `echo $i | awk -v f=$fileLocation  '{print f$1".pwm"}'` ~/Dropbox/temp-data/$i".pwm"
 done
 
 # Generate the count files (cross info for each file)
@@ -63,7 +65,7 @@ do
     do
 	fastaFile=`echo $i |awk -F "_not_" -v file=$fileLocation '{ print file$1".fasta"}'`
 	#$(echo $i |awk -F "_not_" '{ print $1}'| sed 's/.pwm//' | awk -F "-"  -v type="combined" '{print "combine ../UTX-Alex/jan/"type"  |grep $(eval $(echo  \"echo $\""$1" | sed \x27s/_/\"""\\\\\\\\""|\"$/g\x27)) | grep -v $(eval $(echo  \"echo $\""$2" | sed \x27s/_/\"""\\\\\\\\""|\"$/g\x27))|makeFasta"}')
-	backFile=`echo $i |awk -F "_not_" -v file=$fileLocation '{ print file$2}' | sed 's/.pwm/.fasta/'`
+	backFile=`echo $i |awk -F "_not_" -v file=$fileLocation '{ print file"not_"$2}' | sed 's/.pwm/.fasta/'`
 	#$(echo $i |awk -F "_not_" '{ print $2}'| sed 's/.pwm//' | awk -F "-"  -v type="combined" '{print "combine ../UTX-Alex/jan/"type"  |grep $(eval $(echo  \"echo $\""$1" | sed \x27s/_/\"""\\\\\\\\""|\"$/g\x27)) |grep -v $(eval $(echo  \"echo $\""$2" | sed \x27s/_/\"""\\\\\\\\""|\"$/g\x27))|makeFasta"}')
 	outfile=$(echo "" | awk -v a=`echo $j | sed 's/.pwm//g'`  -v b=`echo $i | sed 's/.pwm//g' ` '{print a","b}' | sed -r $transform)
 	echo $outfile
@@ -89,4 +91,4 @@ cat temp3 temp >temp4
 mv temp4 temp3
 done
 
-sed -r 's/1e|1e-//g' temp3 > p-score_table_1.tab
+sed -r 's/1e|1e-//g' temp3 > e_not_e_p-score_table.tab
