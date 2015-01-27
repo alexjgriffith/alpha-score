@@ -62,7 +62,7 @@ class builderSplit():
         
 def main():
     filename=file(sys.argv[1])
-    peaks=builderSplit(loadPeaks(filename),n=sys.argv[3])
+    peaks=builderSplit(loadPeaks(filename),n=float(sys.argv[3]))
     if(sys.argv[3]=="info"):
         printInfo(peaks(sys.argv[2]))
     elif(sys.argv[3]=="fasta"):

@@ -42,7 +42,7 @@ done
 
 Rscript ./scripts/a-score.r -i ~/Dropbox/UTX-Alex/jan/combined_heights.bed -c ~/Dropbox/UTX-Alex/jan/catagories -b 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 > ~/Dropbox/UTX-Alex/jan/combined_scored.bed
 
-python2.7 ./scripts/tags2.py <(paste <( cut -f 1-3 ~/Dropbox/UTX-Alex/jan/combined_sorted.bed) <(grep -v ">" ~/Dropbox/UTX-Alex/jan/combined.fasta) <( cut -f 8 ~/Dropbox/UTX-Alex/jan/combined_scored.bed)) bottom > $fileLocation"meka.fasta"
+python2.7 ./scripts/tags2.py <(paste <( cut -f 1-3 ~/Dropbox/UTX-Alex/jan/combined_sorted.bed) <(grep -v ">" ~/Dropbox/UTX-Alex/jan/combined.fasta) <( cut -f 8 ~/Dropbox/UTX-Alex/jan/combined_scored.bed)) bottom 3> $fileLocation"temp.fasta"
 
 for i in ${sets[*]}
 do
