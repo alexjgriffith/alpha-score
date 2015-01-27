@@ -1,3 +1,16 @@
+#!/usr/bin/env python2.7
+#
+# This file is part of peakAnalysis, http://github.com/alexjgriffith/peaks/, 
+# and is Copyright (C) University of Ottawa, 2014. It is Licensed under 
+# the three-clause BSD License; see doc/LICENSE.txt.
+# Contact: griffitaj@gmail.com
+#
+# Created : AUG262014
+# File    : buildPeaksClass
+# Author  : Alexander Griffith
+# Lab     : Dr. Brand and Dr. Perkins
+
+
 import sys
 from numpy import mean,std,matrix,argsort,sort,fft
 import tags2
@@ -30,14 +43,36 @@ def main():
         classes=a.union(classes)
     classes=list(classes)
     data=peaks(seperationFunction)
-    printData(data,lada,classes)
-    #prat=buildHistogram(data,["jurk","eryt","meka","rpmi","k562"],normalize=True)
-    #plotStackedPDF(prat,["jurk","eryt","meka","rpmi","k562"])
+    #printData(data,lada,classes)
+    prat=buildHistogram(data,classes,normalize=True,n=24)
+    classes2={}
+    classes2["normal"]=["eryt","k562"]
+    classes2["abnormal"]=["jurk","rpmi","cem","tall_p1","tall_p2","tall_p3"]
+    temp=mergeClasses(prat,classes,classes2)
+    plotStackedPDF(temp,temp[0][0].keys(),zoh=True,r=100)
+
+def mergeClasses(prat,classes,classes2):
+    temp=[]
+    for i in prat:
+        da={}
+        for j in classes:
+            if j in sum(classes2.values(),[]):
+                for k in classes2.keys():
+                    if(j in classes2[k]):
+                        try:
+                            da[k]+=i[0][j]
+                        except:
+                            da[k]=i[0][j]
+            else:
+                da[j]=i[0][j]
+        temp.append((da,i[1]))
+    return temp
+    
 
 def buildHistogram(data,classes,n=100,normalize=False):
     m=min([i.score for i in data])
     M=max([i.score for i in data])
-    step=(M-m)/n
+    step=(M-m)/float(n)
     da={}
     for j in classes:
         da[j]=0.0
@@ -75,15 +110,13 @@ def plotPDFs(prat,classes):
         tert=[0]
         for i in range(len(temp)):
             tert.append(tert[i]+temp[i])
-        print len(tert), len(x),tert[-1]
         temp2=[j/tert[-1] for j in temp]
         plt.plot(x,temp)
     plt.show()
     exit()
 
-def plotStackedPDF(prat,classes):
+def plotStackedPDF(prat,classes,zoh=True,r=100):
     x=[i[1] for i in prat]
-    print x[0:2]
     n=len(prat)
     N=len(classes)
     pData=[[prat[i][0][j] for i in range(n)] for j in classes ]
@@ -93,16 +126,43 @@ def plotStackedPDF(prat,classes):
     for i in [j+1 for j in range(N-1)]:
         temp=[k+j for k,j in zip(pData[i],pData[i-1])]
         pData[i]=temp
+    print len(pData[0])
+    if(zoh==True):
+        y=[]
+        tet={}
+        for i in classes:
+            tet[i]=0
+        for i,j in zip(x[:-1],x[1:]):
+            step=(j-i)/r
+            for k in range(r):
+                y.append(i+step*k)
+        for k in range(r):
+            y.append(j+step*k)
+        k=0
+        t=[]
+        for i in pData:
+            temp=[]
+            for j in i:
+                    temp.extend([j]*r)
+            k+=1
+            t.append(temp)
+        pData=t
+        x=y
+    print len(pData[0])
     i=0
+
+
     plt.plot(0, 0,color=cols[0],label=classes[order[i]],linewidth=10)
-    plt.fill_between(x, pData[0], 0,color=cols[0])
+    plt.fill_between(x, t[0], 0,color=cols[0])
     for i in [j + 1 for j in range(N-1)]:
+        print len(pData[i])
         plt.plot(0,0,color=cols[i],label=classes[order[i]],linewidth=10)
-        plt.fill_between(x, pData[i], pData[i-1],color=cols[i])
+        plt.fill_between(x, t[i], t[i-1],color=cols[i])
     plt.legend()
     plt.xlabel("PCA Value")
     plt.ylabel("Number of Peaks")
     plt.title("PC1 mean-sd*6<x<mean+sd*6")
+
     plt.show()
 
 def printData(data,lada,classes):

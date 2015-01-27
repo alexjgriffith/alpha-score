@@ -1,3 +1,15 @@
+#!/usr/bin/env python2.7
+#
+# This file is part of peakAnalysis, http://github.com/alexjgriffith/peaks/, 
+# and is Copyright (C) University of Ottawa, 2014. It is Licensed under 
+# the three-clause BSD License; see doc/LICENSE.txt.
+# Contact: griffitaj@gmail.com
+#
+# Created : AUG262014
+# File    : buildPeaksClass
+# Author  : Alexander Griffith
+# Lab     : Dr. Brand and Dr. Perkins
+
 import sys
 from numpy import mean,std
 
@@ -50,7 +62,7 @@ class builderSplit():
         
 def main():
     filename=file(sys.argv[1])
-    peaks=builderSplit(loadPeaks(filename),n=1)
+    peaks=builderSplit(loadPeaks(filename),n=sys.argv[3])
     if(sys.argv[3]=="info"):
         printInfo(peaks(sys.argv[2]))
     elif(sys.argv[3]=="fasta"):
